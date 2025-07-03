@@ -84,17 +84,34 @@ if tab == "Data Visualization":
     else:
         st.info("No categorical columns found.")
 
-    st.subheader("4. Correlation Matrix")
-    num_cols = df.select_dtypes(include=np.number).columns
-    if len(num_cols) > 1:
+    st.subheader("4. Correlation Matrix (Selected Metrics Only)")
+    corr_cols = [
+        "MonthlyCharges",
+        "TotalCharges",
+        "Tenure",
+        "Customer_Lifetime_Value",
+        "Satisfaction_Score"
+    ]
+    existing_cols = [col for col in corr_cols if col in df.columns]
+    missing_cols = [col for col in corr_cols if col not in df.columns]
+
+    if len(existing_cols) >= 2:
         fig, ax = plt.subplots()
-        sns.heatmap(df[num_cols].corr(), annot=True, ax=ax)
+        sns.heatmap(df[existing_cols].corr(), annot=True, ax=ax, cmap="coolwarm")
         st.pyplot(fig)
-        st.caption("Correlation between numerical variables.")
+        st.caption(
+            "Correlation matrix among key business metrics: " +
+            ", ".join(existing_cols) +
+            (" (missing columns: " + ", ".join(missing_cols) + ")" if missing_cols else "")
+        )
     else:
-        st.info("Not enough numeric columns for correlation.")
+        st.warning(
+            "Not enough of the selected columns found for correlation matrix. " +
+            ("Missing columns: " + ", ".join(missing_cols) if missing_cols else "")
+        )
 
     st.subheader("5. Pairplot (sample numeric columns)")
+    num_cols = df.select_dtypes(include=np.number).columns
     if len(num_cols) >= 2:
         st.info("Pairplot on up to 5 numeric columns.")
         fig = sns.pairplot(df[num_cols[:5]])
