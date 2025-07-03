@@ -84,25 +84,29 @@ if tab == "Data Visualization":
     else:
         st.info("No categorical columns found.")
 
-    st.subheader("4. Correlation Matrix (Selected Metrics Only)")
+    st.subheader("4. Correlation Matrix (Selected Metrics + Churn_B)")
+    # Explicitly use columns as present in your uploaded file
     corr_cols = [
         "MonthlyCharges",
         "TotalCharges",
         "Tenure",
         "Customer_Lifetime_Value",
-        "Satisfaction_Score"
+        "Satisfaction_Score",
+        "Churn_B"
     ]
     existing_cols = [col for col in corr_cols if col in df.columns]
     missing_cols = [col for col in corr_cols if col not in df.columns]
-
     if len(existing_cols) >= 2:
+        corr_df = df[existing_cols].copy()
+        # Encode Churn_B if it's not numeric
+        if "Churn_B" in existing_cols and not pd.api.types.is_numeric_dtype(corr_df["Churn_B"]):
+            corr_df["Churn_B"] = LabelEncoder().fit_transform(corr_df["Churn_B"].astype(str))
         fig, ax = plt.subplots()
-        sns.heatmap(df[existing_cols].corr(), annot=True, ax=ax, cmap="coolwarm")
+        sns.heatmap(corr_df.corr(), annot=True, ax=ax, cmap="coolwarm")
         st.pyplot(fig)
         st.caption(
-            "Correlation matrix among key business metrics: " +
-            ", ".join(existing_cols) +
-            (" (missing columns: " + ", ".join(missing_cols) + ")" if missing_cols else "")
+            "Correlation matrix among key metrics and churn flag. " +
+            ("Missing columns: " + ", ".join(missing_cols) if missing_cols else "")
         )
     else:
         st.warning(
