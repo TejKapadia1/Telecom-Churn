@@ -69,28 +69,28 @@ if tab == "Data Visualization":
     st.subheader("1. Data Snapshot")
     st.write(df.head())
 
-    st.subheader("2. Churn Rate vs Tenure (Line Graph)")
-    # Ensure 'Tenure' and 'Churn_B' are present
-    if "Tenure" in df.columns and "Churn_B" in df.columns:
-        # Encode Churn_B if needed
+    st.subheader("2. Churn Rate vs Tenure Bucket (Line Graph)")
+    # Ensure 'Tenure_Bucket' and 'Churn_B' are present
+    if "Tenure_Bucket" in df.columns and "Churn_B" in df.columns:
         churn_series = df["Churn_B"]
         if churn_series.dtype == 'O':
             churn_series = LabelEncoder().fit_transform(churn_series.astype(str))
-        # Group by Tenure and calculate churn rate
         churn_data = pd.DataFrame({
-            "Tenure": df["Tenure"],
+            "Tenure_Bucket": df["Tenure_Bucket"],
             "Churn_B": churn_series
         })
-        churn_rate_by_tenure = churn_data.groupby("Tenure")["Churn_B"].mean()
+        # Group by Tenure_Bucket and calculate churn rate in percent
+        churn_bucket_rate = churn_data.groupby("Tenure_Bucket")["Churn_B"].mean() * 100
         fig, ax = plt.subplots()
-        ax.plot(churn_rate_by_tenure.index, churn_rate_by_tenure.values, marker='o')
-        ax.set_xlabel("Tenure (months)")
-        ax.set_ylabel("Churn Rate")
-        ax.set_title("Churn Rate vs Tenure")
+        ax.plot(churn_bucket_rate.index.astype(str), churn_bucket_rate.values, marker='o')
+        ax.set_xlabel("Tenure Bucket")
+        ax.set_ylabel("Churn Rate (%)")
+        ax.set_title("Churn Rate vs Tenure Bucket")
+        plt.xticks(rotation=30)
         st.pyplot(fig)
-        st.caption("Shows the relationship between customer tenure and churn rate.")
+        st.caption("Shows the percentage churn rate in each tenure bucket.")
     else:
-        st.info("Columns 'Tenure' and/or 'Churn_B' not found in the data.")
+        st.info("Columns 'Tenure_Bucket' and/or 'Churn_B' not found in the data.")
 
     st.subheader("3. Correlation Matrix (Selected Metrics + Churn_B)")
     corr_cols = [
