@@ -283,7 +283,8 @@ elif tab == "Regression Insights":
         for name, model in models.items():
             model.fit(X_train, y_train)
             pred = model.predict(X_test)
-            rmse = mean_squared_error(y_test, pred, squared=False)
+            mse = mean_squared_error(y_test, pred)
+            rmse = np.sqrt(mse)
             r2 = r2_score(y_test, pred)
             results.append({"Model": name, "RMSE": rmse, "R2": r2})
         st.subheader("Regression Model Comparison")
@@ -300,4 +301,3 @@ elif tab == "Regression Insights":
         ax.set_title(f"Predicted vs Actual for {selected_model}")
         st.pyplot(fig)
         st.success("These insights reflect model performance and prediction accuracy.")
-
