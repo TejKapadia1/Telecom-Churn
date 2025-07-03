@@ -89,7 +89,7 @@ if tab == "Data Visualization":
     corr_cols = [
         "MonthlyCharges",
         "TotalCharges",
-        "Tenure",
+        "tenure",
         "Customer_Lifetime_Value",
         "Satisfaction_Score",
         "Churn_B"
