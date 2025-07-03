@@ -104,15 +104,15 @@ if tab == "Data Visualization":
 
     # 3. Engagement Count vs Churn Rate (Line Graph, black bg)
     st.subheader("3. Engagement Count vs Churn Rate (Line Graph)")
-    if "Engagement Count" in df.columns and "Churn_B" in df.columns:
+    if "Engagement_Count" in df.columns and "Churn_B" in df.columns:
         churn_series = df["Churn_B"]
         if churn_series.dtype == 'O':
             churn_series = LabelEncoder().fit_transform(churn_series.astype(str))
         churn_data = pd.DataFrame({
-            "Engagement Count": df["Engagement Count"],
+            "Engagement_Count": df["Engagement_Count"],
             "Churn_B": churn_series
         })
-        churn_engage_rate = churn_data.groupby("Engagement Count")["Churn_B"].mean() * 100
+        churn_engage_rate = churn_data.groupby("Engagement_Count")["Churn_B"].mean() * 100
         fig, ax = plt.subplots(facecolor='black')
         fig.patch.set_facecolor('black')
         ax.set_facecolor('black')
@@ -133,7 +133,7 @@ if tab == "Data Visualization":
         st.pyplot(fig)
         st.caption("Shows the percentage churn rate for each engagement count.")
     else:
-        st.info("Columns 'Engagement Count' and/or 'Churn_B' not found in the data.")
+        st.info("Columns 'Engagement_Count' and/or 'Churn_B' not found in the data.")
 
     # 4. Loyalty_Tier vs Churn Rate (Pie Chart, black bg, legend, 3D-style)
     st.subheader("4. Loyalty_Tier vs Churn Rate (Pie Chart)")
@@ -214,13 +214,7 @@ if tab == "Data Visualization":
     st.subheader("7. Descriptive Statistics")
     st.write(df.describe())
 
-    st.subheader("8. Value Counts for Categorical Columns")
-    cat_cols = df.select_dtypes(include=['object', 'category']).columns
-    for col in cat_cols:
-        st.write(f"**{col}**")
-        st.write(df[col].value_counts())
-
-    st.subheader("9. Boxplot for Outlier Detection")
+    st.subheader("8. Boxplot for Outlier Detection")
     if len(num_cols):
         col = st.selectbox("Select numeric column for boxplot", num_cols, key='box')
         fig, ax = plt.subplots()
@@ -230,7 +224,7 @@ if tab == "Data Visualization":
     else:
         st.info("No numeric columns available.")
 
-    st.subheader("10. Histogram for Numeric Columns")
+    st.subheader("9. Histogram for Numeric Columns")
     if len(num_cols):
         col2 = st.selectbox("Select numeric column for histogram", num_cols, key='hist')
         bins = st.slider("Number of bins", 5, 50, 20)
@@ -239,7 +233,8 @@ if tab == "Data Visualization":
         st.pyplot(fig)
         st.caption(f"Histogram of {col2}.")
 
-    st.subheader("11. Pivot Table (Categorical Columns)")
+    st.subheader("10. Pivot Table (Categorical Columns)")
+    cat_cols = df.select_dtypes(include=['object', 'category']).columns
     if len(cat_cols) >= 2:
         idx_col = st.selectbox("Row category", cat_cols, key='rowcat')
         col_col = st.selectbox("Column category", cat_cols, key='colcat')
