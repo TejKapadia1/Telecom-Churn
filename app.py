@@ -104,15 +104,15 @@ if tab == "Data Visualization":
 
     # 3. Engagement Count vs Churn Rate (Line Graph, black bg)
     st.subheader("3. Engagement Count vs Churn Rate (Line Graph)")
-    if "Engagement_Count" in df.columns and "Churn_B" in df.columns:
+    if "Engagement Count" in df.columns and "Churn_B" in df.columns:
         churn_series = df["Churn_B"]
         if churn_series.dtype == 'O':
             churn_series = LabelEncoder().fit_transform(churn_series.astype(str))
         churn_data = pd.DataFrame({
-            "Engagement_Count": df["Engagement_Count"],
+            "Engagement Count": df["Engagement Count"],
             "Churn_B": churn_series
         })
-        churn_engage_rate = churn_data.groupby("Engagement_Count")["Churn_B"].mean() * 100
+        churn_engage_rate = churn_data.groupby("Engagement Count")["Churn_B"].mean() * 100
         fig, ax = plt.subplots(facecolor='black')
         fig.patch.set_facecolor('black')
         ax.set_facecolor('black')
@@ -133,7 +133,7 @@ if tab == "Data Visualization":
         st.pyplot(fig)
         st.caption("Shows the percentage churn rate for each engagement count.")
     else:
-        st.info("Columns 'Engagement_Count' and/or 'Churn_B' not found in the data.")
+        st.info("Columns 'Engagement Count' and/or 'Churn_B' not found in the data.")
 
     # 4. Loyalty_Tier vs Churn Rate (Pie Chart, black bg, legend, 3D-style)
     st.subheader("4. Loyalty_Tier vs Churn Rate (Pie Chart)")
