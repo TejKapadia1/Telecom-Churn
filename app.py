@@ -102,8 +102,41 @@ if tab == "Data Visualization":
     else:
         st.info("Columns 'Tenure_Bucket' and/or 'Churn_B' not found in the data.")
 
-    # 3. Loyalty_Tier vs Churn Rate (Pie Chart, black bg, legend, 3D-style)
-    st.subheader("3. Loyalty_Tier vs Churn Rate (Pie Chart)")
+    # 3. Engagement Count vs Churn Rate (Line Graph, black bg)
+    st.subheader("3. Engagement Count vs Churn Rate (Line Graph)")
+    if "Engagement_Count" in df.columns and "Churn_B" in df.columns:
+        churn_series = df["Churn_B"]
+        if churn_series.dtype == 'O':
+            churn_series = LabelEncoder().fit_transform(churn_series.astype(str))
+        churn_data = pd.DataFrame({
+            "Engagement_Count": df["Engagement_Count"],
+            "Churn_B": churn_series
+        })
+        churn_engage_rate = churn_data.groupby("Engagement_Count")["Churn_B"].mean() * 100
+        fig, ax = plt.subplots(facecolor='black')
+        fig.patch.set_facecolor('black')
+        ax.set_facecolor('black')
+        ax.plot(
+            churn_engage_rate.index.astype(str), churn_engage_rate.values, marker='o',
+            color='#ff57c1', linewidth=2, markerfacecolor='white', markeredgewidth=2, markeredgecolor='#ff57c1'
+        )
+        ax.set_xlabel("Engagement Count", color='white', fontsize=12)
+        ax.set_ylabel("Churn Rate (%)", color='white', fontsize=12)
+        ax.set_title("Churn Rate vs Engagement Count", color='white', fontsize=14)
+        plt.setp(ax.get_xticklabels(), color='white')
+        plt.setp(ax.get_yticklabels(), color='white')
+        ax.spines['bottom'].set_color('white')
+        ax.spines['top'].set_color('white')
+        ax.spines['right'].set_color('white')
+        ax.spines['left'].set_color('white')
+        ax.grid(True, color='#444444', linestyle='--', linewidth=0.5, alpha=0.7)
+        st.pyplot(fig)
+        st.caption("Shows the percentage churn rate for each engagement count.")
+    else:
+        st.info("Columns 'Engagement_Count' and/or 'Churn_B' not found in the data.")
+
+    # 4. Loyalty_Tier vs Churn Rate (Pie Chart, black bg, legend, 3D-style)
+    st.subheader("4. Loyalty_Tier vs Churn Rate (Pie Chart)")
     if "Loyalty_Tier" in df.columns and "Churn_B" in df.columns:
         churn_series = df["Churn_B"]
         if churn_series.dtype == 'O':
@@ -126,7 +159,7 @@ if tab == "Data Visualization":
             startangle=90,
             explode=explode,
             pctdistance=0.85,
-            wedgeprops=dict(edgecolor='white', linewidth=2, alpha=0.95),  # FIXED!
+            wedgeprops=dict(edgecolor='white', linewidth=2, alpha=0.95),
             textprops={'fontsize': 10, 'color': 'white'},
             shadow=True
         )
@@ -142,7 +175,7 @@ if tab == "Data Visualization":
     else:
         st.info("Columns 'Loyalty_Tier' and/or 'Churn_B' not found in the data.")
 
-    st.subheader("4. Correlation Matrix (Selected Metrics + Churn_B)")
+    st.subheader("5. Correlation Matrix (Selected Metrics + Churn_B)")
     corr_cols = [
         "MonthlyCharges",
         "TotalCharges",
@@ -170,7 +203,7 @@ if tab == "Data Visualization":
             ("Missing columns: " + ", ".join(missing_cols) if missing_cols else "")
         )
 
-    st.subheader("5. Pairplot (sample numeric columns)")
+    st.subheader("6. Pairplot (sample numeric columns)")
     num_cols = df.select_dtypes(include=np.number).columns
     if len(num_cols) >= 2:
         st.info("Pairplot on up to 5 numeric columns.")
@@ -178,16 +211,16 @@ if tab == "Data Visualization":
         st.pyplot(fig)
         plt.clf()
 
-    st.subheader("6. Descriptive Statistics")
+    st.subheader("7. Descriptive Statistics")
     st.write(df.describe())
 
-    st.subheader("7. Value Counts for Categorical Columns")
+    st.subheader("8. Value Counts for Categorical Columns")
     cat_cols = df.select_dtypes(include=['object', 'category']).columns
     for col in cat_cols:
         st.write(f"**{col}**")
         st.write(df[col].value_counts())
 
-    st.subheader("8. Boxplot for Outlier Detection")
+    st.subheader("9. Boxplot for Outlier Detection")
     if len(num_cols):
         col = st.selectbox("Select numeric column for boxplot", num_cols, key='box')
         fig, ax = plt.subplots()
@@ -197,7 +230,7 @@ if tab == "Data Visualization":
     else:
         st.info("No numeric columns available.")
 
-    st.subheader("9. Histogram for Numeric Columns")
+    st.subheader("10. Histogram for Numeric Columns")
     if len(num_cols):
         col2 = st.selectbox("Select numeric column for histogram", num_cols, key='hist')
         bins = st.slider("Number of bins", 5, 50, 20)
@@ -206,7 +239,7 @@ if tab == "Data Visualization":
         st.pyplot(fig)
         st.caption(f"Histogram of {col2}.")
 
-    st.subheader("10. Pivot Table (Categorical Columns)")
+    st.subheader("11. Pivot Table (Categorical Columns)")
     if len(cat_cols) >= 2:
         idx_col = st.selectbox("Row category", cat_cols, key='rowcat')
         col_col = st.selectbox("Column category", cat_cols, key='colcat')
