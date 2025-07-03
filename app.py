@@ -126,7 +126,7 @@ if tab == "Data Visualization":
             startangle=90,
             explode=explode,
             pctdistance=0.85,
-            wedgeprops=dict(edgecolor='white', linewidth=1.2, alpha=0.95, linewidths=1.3),
+            wedgeprops=dict(edgecolor='white', linewidth=2, alpha=0.95),  # FIXED!
             textprops={'fontsize': 10, 'color': 'white'},
             shadow=True
         )
