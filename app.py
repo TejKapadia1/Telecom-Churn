@@ -91,8 +91,7 @@ if tab == "Data Visualization":
         "TotalCharges",
         "tenure",
         "Customer_Lifetime_Value",
-        "Satisfaction_Score",
-        "Churn_B"
+        "Satisfaction_Score" 
     ]
     existing_cols = [col for col in corr_cols if col in df.columns]
     missing_cols = [col for col in corr_cols if col not in df.columns]
