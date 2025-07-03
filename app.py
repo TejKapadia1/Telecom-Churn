@@ -69,6 +69,7 @@ if tab == "Data Visualization":
     st.subheader("1. Data Snapshot")
     st.write(df.head())
 
+    # 2. Churn Rate vs Tenure Bucket (Line Graph, black bg)
     st.subheader("2. Churn Rate vs Tenure Bucket (Line Graph)")
     if "Tenure_Bucket" in df.columns and "Churn_B" in df.columns:
         churn_series = df["Churn_B"]
@@ -79,17 +80,29 @@ if tab == "Data Visualization":
             "Churn_B": churn_series
         })
         churn_bucket_rate = churn_data.groupby("Tenure_Bucket")["Churn_B"].mean() * 100
-        fig, ax = plt.subplots()
-        ax.plot(churn_bucket_rate.index.astype(str), churn_bucket_rate.values, marker='o')
-        ax.set_xlabel("Tenure Bucket")
-        ax.set_ylabel("Churn Rate (%)")
-        ax.set_title("Churn Rate vs Tenure Bucket")
-        plt.xticks(rotation=30)
+        fig, ax = plt.subplots(facecolor='black')
+        fig.patch.set_facecolor('black')
+        ax.set_facecolor('black')
+        ax.plot(
+            churn_bucket_rate.index.astype(str), churn_bucket_rate.values, marker='o',
+            color='#00ffd0', linewidth=2, markerfacecolor='white', markeredgewidth=2, markeredgecolor='#00ffd0'
+        )
+        ax.set_xlabel("Tenure Bucket", color='white', fontsize=12)
+        ax.set_ylabel("Churn Rate (%)", color='white', fontsize=12)
+        ax.set_title("Churn Rate vs Tenure Bucket", color='white', fontsize=14)
+        plt.setp(ax.get_xticklabels(), color='white')
+        plt.setp(ax.get_yticklabels(), color='white')
+        ax.spines['bottom'].set_color('white')
+        ax.spines['top'].set_color('white')
+        ax.spines['right'].set_color('white')
+        ax.spines['left'].set_color('white')
+        ax.grid(True, color='#444444', linestyle='--', linewidth=0.5, alpha=0.7)
         st.pyplot(fig)
         st.caption("Shows the percentage churn rate in each tenure bucket.")
     else:
         st.info("Columns 'Tenure_Bucket' and/or 'Churn_B' not found in the data.")
 
+    # 3. Loyalty_Tier vs Churn Rate (Pie Chart, black bg, legend, 3D-style)
     st.subheader("3. Loyalty_Tier vs Churn Rate (Pie Chart)")
     if "Loyalty_Tier" in df.columns and "Churn_B" in df.columns:
         churn_series = df["Churn_B"]
@@ -102,10 +115,28 @@ if tab == "Data Visualization":
         churn_tier_rate = churn_data.groupby("Loyalty_Tier")["Churn_B"].mean() * 100
         labels = churn_tier_rate.index.astype(str)
         sizes = churn_tier_rate.values
-        fig, ax = plt.subplots()
-        wedges, texts, autotexts = ax.pie(sizes, labels=labels, autopct='%.1f%%', startangle=90, textprops={'fontsize': 10})
+        explode = [0.08] * len(sizes)  # Make all slices "pop out" for 3D effect
+        fig, ax = plt.subplots(facecolor='black')
+        fig.patch.set_facecolor('black')
+        ax.set_facecolor('black')
+        wedges, texts, autotexts = ax.pie(
+            sizes,
+            labels=labels,
+            autopct='%.1f%%',
+            startangle=90,
+            explode=explode,
+            pctdistance=0.85,
+            wedgeprops=dict(edgecolor='white', linewidth=1.2, alpha=0.95, linewidths=1.3),
+            textprops={'fontsize': 10, 'color': 'white'},
+            shadow=True
+        )
+        for w in wedges:
+            w.set_linewidth(2)
+            w.set_edgecolor('grey')
         ax.axis('equal')
-        ax.set_title("Churn Rate (%) by Loyalty Tier")
+        ax.set_title("Churn Rate (%) by Loyalty Tier", color='white', fontsize=14)
+        # Add a legend outside the pie
+        ax.legend(labels, title="Loyalty Tier", loc="center left", bbox_to_anchor=(1, 0.5), facecolor='black', labelcolor='white', fontsize=10, title_fontsize=11)
         st.pyplot(fig)
         st.caption("Pie chart of churn rate for each Loyalty Tier. (Churn rate = churned/total in tier × 100)")
     else:
